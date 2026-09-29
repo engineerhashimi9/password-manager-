@@ -1,0 +1,169 @@
+import customtkinter as ctk
+# Import the builder functions from your functional module
+from gui_functions import create_settings_frame, create_content_frame
+
+# 1. Global Configurations (Must execute prior to initializing CTk window)
+ctk.set_appearance_mode("System")
+ctk.set_default_color_theme("blue")
+
+def build_main_app():
+    """Initializes properties, imports, layout grids, and launches the app."""
+    # Create the root window
+    root = ctk.CTk()
+    root.title("Functional Modular CustomTkinter App")
+    root.geometry("600x400")
+    
+    # Configure root container column layouts (1 row, 2 columns)
+    root.grid_columnconfigure(0, weight=1)  # Left Sidebar
+    root.grid_columnconfigure(1, weight=3)  # Right Content Pane
+    root.grid_rowconfigure(0, weight=1)
+    
+    # 2. Call factory functions to generate UI components
+    sidebar = create_settings_frame(parent=root)
+    sidebar.grid(row=0, column=0, sticky="nsew")
+    
+    content_area = create_content_frame(parent=root)
+    content_area.grid(row=0, column=1, sticky="nsew", padx=20, pady=20)
+    
+    # 3. Fire the main window engine loop
+    root.mainloop()
+
+
+if __name__ == "__main__":
+    build_main_app()
+
+
+
+
+import customtkinter as ctk
+
+def create_settings_frame(parent) -> ctk.CTkFrame:
+    """Creates and returns a modular settings frame for switching themes."""
+    # Create the base frame container
+    frame = ctk.CTkFrame(parent, corner_radius=0)
+    
+    # Title Label
+    title_label = ctk.CTkLabel(frame, text="Theme Settings", font=ctk.CTkFont(size=16, weight="bold"))
+    title_label.pack(pady=10, padx=10)
+    
+    # Dropdown label
+    mode_label = ctk.CTkLabel(frame, text="Appearance Mode:")
+    mode_label.pack(anchor="w", padx=15)
+    
+    # Internal callback handler for the dropdown change
+    def on_mode_change(new_mode: str):
+        ctk.set_appearance_mode(new_mode)
+    
+    # Configuration Dropdown
+    mode_menu = ctk.CTkOptionMenu(
+        frame, 
+        values=["System", "Dark", "Light"], 
+        command=on_mode_change
+    )
+    mode_menu.pack(pady=(0, 15), padx=15, fill="x")
+    mode_menu.set(ctk.get_appearance_mode())
+    
+    return frame
+
+
+def create_content_frame(parent) -> ctk.CTkFrame:
+    """Creates and returns a modular frame for the main layout content."""
+    # Create a clean, transparent main frame container
+    frame = ctk.CTkFrame(parent, fg_color="transparent")
+    
+    title_label = ctk.CTkLabel(frame, text="Main Content Area", font=ctk.CTkFont(size=16, weight="bold"))
+    title_label.pack(pady=10)
+    
+    output_label = ctk.CTkLabel(frame, text="")
+    
+    # Internal callback handler for button clicks
+    def handle_click():
+        output_label.configure(text="Button clicked via Functional Module!")
+    
+    action_btn = ctk.CTkButton(frame, text="Click Me", command=handle_click)
+    action_btn.pack(pady=20)
+    
+    output_label.pack(pady=5)
+    
+    return frame
+
+import customtkinter as ctk
+# Import your custom modular frames
+from gui_components import SettingsFrame, ContentFrame
+
+# 1. Global configurations (Must be set before initializing CTk)
+ctk.set_appearance_mode("System")  
+ctk.set_default_color_theme("blue")  
+
+class App(ctk.CTk):
+    """The core application window orchestrating the custom frames."""
+    def __init__(self):
+        super().__init__()
+        
+        # Configure main window grid/layout
+        self.title("Modular CustomTkinter App")
+        self.geometry("600x400")
+        
+        # Configure layout grids (1 row, 2 columns)
+        self.grid_columnconfigure(0, weight=1) # Sidebar
+        self.grid_columnconfigure(1, weight=3) # Content
+        self.grid_rowconfigure(0, weight=1)
+        
+        # 2. Instantiate and layout modular components
+        self.sidebar_frame = SettingsFrame(master=self, corner_radius=0)
+        self.sidebar_frame.grid(row=0, column=0, sticky="nsew")
+        
+        self.main_frame = ContentFrame(master=self, fg_color="transparent")
+        self.main_frame.grid(row=0, column=1, sticky="nsew", padx=20, pady=20)
+
+
+if __name__ == "__main__":
+    # 3. Start the application
+    app = App()
+    app.mainloop()
+
+
+
+import customtkinter as ctk
+
+class SettingsFrame(ctk.CTkFrame):
+    """A modular frame for changing application theme settings."""
+    def __init__(self, master, **kwargs):
+        super().__init__(master, **kwargs)
+        
+        # Title Label
+        self.label = ctk.CTkLabel(self, text="Theme Settings", font=ctk.CTkFont(size=16, weight="bold"))
+        self.label.pack(pady=10, padx=10)
+        
+        # Appearance Mode Menu (Light/Dark/System)
+        self.mode_label = ctk.CTkLabel(self, text="Appearance Mode:")
+        self.mode_label.pack(anchor="w", padx=15)
+        
+        self.mode_menu = ctk.CTkOptionMenu(
+            self, 
+            values=["System", "Dark", "Light"], 
+            command=self.change_appearance_mode
+        )
+        self.mode_menu.pack(pady=(0, 15), padx=15, fill="x")
+        self.mode_menu.set(ctk.get_appearance_mode())
+
+    def change_appearance_mode(self, new_mode: str):
+        ctk.set_appearance_mode(new_mode)
+
+
+class ContentFrame(ctk.CTkFrame):
+    """A modular frame for the main application content."""
+    def __init__(self, master, **kwargs):
+        super().__init__(master, **kwargs)
+        
+        self.label = ctk.CTkLabel(self, text="Main Content Area", font=ctk.CTkFont(size=16, weight="bold"))
+        self.label.pack(pady=10)
+        
+        self.btn = ctk.CTkButton(self, text="Click Me", command=self.on_button_click)
+        self.btn.pack(pady=20)
+        
+        self.output_label = ctk.CTkLabel(self, text="")
+        self.output_label.pack(pady=5)
+
+    def on_button_click(self):
+        self.output_label.configure(text="Button clicked inside ContentFrame!")
