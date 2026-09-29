@@ -64,16 +64,13 @@ class LoginManager:
                 return True
 
     def login(self):
-
         user_name = self.user_en.get()
         user_pass = self.pass_en.get()
         if self.check_pass(user_name, user_pass):
-            print(self.loginState)
-            self.loginState=True
-            print(self.loginState)
+            self.loginState = True
+
         else:
             messagebox.showerror("error", "user name or password is wrong!")
-
 
 
 def loginPage4(window):
@@ -98,7 +95,8 @@ def loginPage4(window):
     )
     log_lab.grid(row=0, column=0, padx=30, pady=(150, 30))
 
-    self.user_en = ctk.CTkEntry(login_box, placeholder_text="user name", width=200)
+    self.user_en = ctk.CTkEntry(
+        login_box, placeholder_text="user name", width=200)
     self.user_en.grid(row=1, column=0, padx=10, pady=(50, 10))
 
     pass_en = ctk.CTkEntry(
